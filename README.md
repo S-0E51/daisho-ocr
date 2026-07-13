@@ -132,7 +132,7 @@ into a bug report without reading them first.
 
 The reader is a fork of **[japReader](https://github.com/marisukukise/japReader)**
 by marisukukise (originally by [seth-js](https://github.com/seth-js/japReader)),
-GPL-3.0. Our changes are listed in the submodule's `CHANGES.md`.
+GPL-3.0. Changes are listed in the submodule's `CHANGES.md`.
 
 Word definitions come from **JMdict** (Electronic Dictionary Research and
 Development Group, CC BY-SA). Segmentation and morphology come from
