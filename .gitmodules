@@ -1,0 +1,4 @@
+[submodule "study/japReader"]
+	path = study/japReader
+	url = https://github.com/shanlichin2021/japReader.git
+	branch = daisho-integration

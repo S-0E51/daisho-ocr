@@ -1,0 +1,39 @@
+#!/bin/sh
+# Native (no-Docker) Ichiran keepalive service, launched by the OCR app.
+#
+# On non-systemd WSL the distro shuts down once its last process exits, which
+# would stop PostgreSQL between captures. Running this as a long-lived process
+# keeps the distro (and Postgres) warm so the first capture is fast.
+#
+# Usage: ichiran-service-wsl [keepalive|provision|stop]
+
+set -u
+
+script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+# shellcheck source=ichiran-common.sh
+. "$script_dir/ichiran-common.sh"
+
+case "${1:-keepalive}" in
+  provision)
+    ensure_postgres || exit 1
+    ;;
+  stop)
+    if command -v service >/dev/null 2>&1; then
+      sudo service postgresql stop >/dev/null 2>&1 || true
+    elif command -v systemctl >/dev/null 2>&1; then
+      sudo systemctl stop postgresql >/dev/null 2>&1 || true
+    fi
+    ;;
+  keepalive)
+    ensure_postgres || exit 1
+    # Hold the distro open; periodically re-check Postgres to self-heal.
+    while :; do
+      sleep 300
+      postgres_ready || ensure_postgres || true
+    done
+    ;;
+  *)
+    log_err "Usage: ichiran-service-wsl [keepalive|provision|stop]"
+    exit 2
+    ;;
+esac

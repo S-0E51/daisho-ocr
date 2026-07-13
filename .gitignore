@@ -1,0 +1,84 @@
+# Daisho — .gitignore
+#
+# The rules below marked PRIVATE exist because those files contain a verbatim
+# record of the text you capture. Do not relax them.
+#
+# This file is a second line of defence, not the first: the release tree is
+# built by a whitelist (scripts\make_release.ps1) and checked before every push
+# (scripts\check_release.ps1). Trust the check, not the filter.
+
+# ---------------------------------------------------------------- PRIVATE ----
+# Logs record every OCR result, i.e. everything you have read.
+# NOTE: `*.log` alone does NOT match rotated logs like `daisho.log.1`.
+logs/
+*.log
+*.log.*
+
+# The OCR cache stores captured text keyed by image hash.
+ocr_cache/
+*.db
+*.db-wal
+*.db-shm
+
+# Your settings hold absolute paths from your machine.
+ocr_settings.json
+update_check_cache.json
+
+# Credentials, in any shape.
+.env
+*secrets*
+config/
+
+# ------------------------------------------------------------------ HEAVY ----
+# The virtualenv is ~6 GB and is rebuilt by setup.bat.
+venv/
+.venv/
+env/
+ENV/
+
+# Node/Electron build artefacts, rebuilt by build_japreader.bat.
+node_modules/
+out/
+dist/
+build/
+
+# Model weights are downloaded on first use.
+models/
+
+# Local snapshots. NOTE: the folder is `backups` (plural) -- a rule for
+# `backup/` would silently miss it, which is exactly what used to happen.
+backups/
+versions/
+*.zip
+*.tar.gz
+*.7z
+*.rar
+
+# ---------------------------------------------------------------- PYTHON ------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ------------------------------------------------------------------ TOOLS ----
+.claude/
+.agents/
+.vscode/
+.idea/
+*.swp
+*~
+
+# --------------------------------------------------------------------- OS ----
+Thumbs.db
+desktop.ini
+.DS_Store
+*.stackdump
+
+# ---------------------------------------------------------------- RELEASE ----
+# The generated release tree, if you build it from inside a clone.
+release/

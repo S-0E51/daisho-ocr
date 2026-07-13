@@ -1,0 +1,78 @@
+#!/bin/sh
+# Native (no-Docker) Ichiran CLI wrapper for invocation from Windows via wsl.exe.
+#
+# Usage:
+#   ichiran-cli-wsl --health                 # readiness probe (exit 0 = ready)
+#   ichiran-cli-wsl -f -l 1 "テキスト"        # text as operands, OR
+#   printf '%s' 'テキスト' | ichiran-cli-wsl -f -l 1   # text via stdin (preferred)
+#
+# Text is read from stdin when no non-flag operand is supplied. This is the path
+# japReader uses: passing Japanese over wsl.exe stdin avoids wsl.exe's unreliable
+# Unicode argv translation. Once inside WSL, the text is handed to ichiran-cli as
+# a normal UTF-8 argv argument, which is safe.
+#
+# stdout carries only ichiran-cli output (JSON for -f); all diagnostics go to
+# stderr. Exit codes: 0 ok, non-zero on failure with an actionable message.
+
+set -u
+
+script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+# shellcheck source=ichiran-common.sh
+. "$script_dir/ichiran-common.sh"
+
+if ! command -v ichiran-cli >/dev/null 2>&1; then
+  log_err "Ichiran error: ichiran-cli was not found on PATH."
+  log_err "Re-run setup_ichiran_wsl.ps1 to build and install the native ichiran-cli."
+  exit 127
+fi
+
+# --health: confirm Postgres is reachable and ichiran-cli exists, then exit.
+if [ "${1:-}" = "--health" ]; then
+  ensure_postgres || exit 1
+  exit 0
+fi
+
+# Separate flags/options from positional text operands so we can decide whether
+# text was provided on the command line or should be read from stdin.
+flags=""
+text=""
+expect_value=0
+for arg in "$@"; do
+  if [ "$expect_value" -eq 1 ]; then
+    flags="$flags $arg"
+    expect_value=0
+    continue
+  fi
+  case "$arg" in
+    -l|--limit)
+      flags="$flags $arg"
+      expect_value=1
+      ;;
+    -*)
+      flags="$flags $arg"
+      ;;
+    *)
+      # First positional operand is the input text.
+      if [ -z "$text" ]; then
+        text="$arg"
+      else
+        text="$text $arg"
+      fi
+      ;;
+  esac
+done
+
+# No inline text -> read it from stdin (the japReader path).
+if [ -z "$text" ]; then
+  text="$(cat)"
+fi
+
+if [ -z "$text" ]; then
+  log_err "Ichiran error: no input text (pass it as an argument or on stdin)."
+  exit 2
+fi
+
+ensure_postgres || exit 1
+
+# shellcheck disable=SC2086  # $flags is an intentionally word-split option list.
+exec ichiran-cli $flags "$text"

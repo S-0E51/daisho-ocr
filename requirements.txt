@@ -1,0 +1,83 @@
+# MangaReader-OCR v3.0 Dependencies
+# High-precision Japanese OCR desktop application
+
+# ============================================
+# Core OCR Engines
+# ============================================
+# Stylized text fallback: manga-ocr (Vision Encoder-Decoder for manga/games)
+manga-ocr>=0.1.9
+# Includes: torch, transformers, fugashi, unidic-lite
+
+# Optional Gemma 4 vision verifier used by Settings > Processing.
+# Gemma 4 image-text support requires recent Transformers, Accelerate, and Torchvision.
+transformers>=5.0.0
+accelerate>=1.0.0
+torchvision
+
+# Primary general-purpose engine: PaddleOCR with PP-OCRv5
+# NOTE: paddlepaddle 3.3.0 has a known oneDNN/MKLDNN bug that causes
+# ConvertPirAttribute2RuntimeAttribute errors during inference.
+# Pin to 3.2.0 which is the confirmed working version with paddleocr 3.3.x.
+# See: https://github.com/PaddlePaddle/PaddleOCR/discussions/17350
+# setup.bat installs this CPU build by default and can swap to
+# paddlepaddle-gpu on supported NVIDIA systems via `setup.bat gpu`.
+paddlepaddle==3.2.0
+paddleocr>=3.3.0
+
+# Optional one-stop engine: PaddleOCR-VL (0.9B vision-language OCR).
+# Best all-rounder (SOTA vertical Japanese, 109 languages, manga/games/docs).
+# Requires the paddlex OCR extras and a GPU paddle build for usable latency
+# (a 1B VLM on CPU is slow). Pin to the installed paddlex version to avoid
+# disturbing the PP-OCRv5 stack, e.g.:
+#   pip install "paddlex[ocr]==3.3.13"
+# See src/ocr/paddle_vl_engine.py (numpy>=2 + dynamic-mode shims).
+
+# Optional third engine: Surya OCR
+# NOTE: Surya ships under GPL code with separate weight licensing terms.
+surya-ocr>=0.17.0
+
+# Fast CPU fallback: RapidOCR via ONNX Runtime.
+rapidocr>=3.8.0
+onnxruntime>=1.26.0
+
+# ============================================
+# GUI Framework
+# ============================================
+PyQt6>=6.5.0
+
+# ============================================
+# Image Processing
+# ============================================
+opencv-python-headless>=4.8.0
+Pillow>=10.0.0
+numpy
+dxcam>=0.0.5
+
+# ============================================
+# Global Input Handling
+# ============================================
+# Keyboard hotkeys use pynput. Mouse side buttons stay on `mouse`
+# because pynput does not reliably expose mouse4/mouse5 on Windows.
+pynput>=1.7.6
+mouse>=0.7.1
+
+# ============================================
+# Clipboard
+# ============================================
+pyperclip>=1.8.2
+
+# ============================================
+# Caching
+# ============================================
+diskcache>=5.6.0
+
+# ============================================
+# NOTE: PyTorch GPU Support
+# ============================================
+# Default install is CPU-only. For NVIDIA GPU:
+#   pip uninstall torch
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+# Replace cu121 with your CUDA version (check with nvidia-smi)
+#
+# Optional: install a torchvision build that matches your torch build to avoid
+# the transformers ViTImageProcessor PIL fallback warning used by manga-ocr.

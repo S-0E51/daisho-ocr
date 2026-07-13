@@ -1,0 +1,37 @@
+{
+  "_comment": "Optional. Daisho writes its own ocr_settings.json on first run, so you do not need this file. Copy it to ocr_settings.json only if you want to pre-seed settings. Leave japreader_path empty: the app finds the reader it built under study/japReader/out/.",
+
+  "capture_hotkey": "ctrl+q",
+  "overlay_to_mouse_hotkey": "`",
+  "scan_hotkey": "ctrl+shift+s",
+
+  "ocr_engine": "paddle_ocr",
+  "paddle_profile": "standard",
+  "preprocessing_mode": "none",
+  "auto_crop": true,
+  "detect_orientation": true,
+  "post_correction_enabled": true,
+
+  "_comment_verification": "Off by default. 'always' requires a local Ollama server running the model below; without Ollama, leave this off.",
+  "ocr_verification_mode": "off",
+  "ocr_verification_model": "ollama:huihui_ai/gemma-4-abliterated:e4b",
+
+  "auto_copy": true,
+  "show_notification": true,
+  "start_minimized": false,
+
+  "cache_enabled": true,
+  "cache_size_mb": 500,
+  "cache_expiry_days": 30,
+
+  "_comment_japreader": "Leave japreader_path empty and the app auto-detects the reader it built. japreader_ichiran_command is only used once you have run setup_ichiran_wsl.ps1.",
+  "japreader_path": "",
+  "japreader_autolaunch": true,
+  "japreader_integration_mode": "direct",
+  "japreader_send_on_ocr": true,
+  "japreader_clipboard_fallback": true,
+  "japreader_post_capture_behavior": "reveal",
+  "japreader_parse_timeout_sec": 30.0,
+  "japreader_ichiran_command": "wsl.exe -d Ubuntu -- /usr/local/bin/ichiran-cli-wsl",
+  "japreader_ichiran_service_command": "wsl.exe -d Ubuntu -- /usr/local/bin/ichiran-service-wsl"
+}
