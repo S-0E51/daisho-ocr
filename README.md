@@ -1,4 +1,4 @@
-# 代書 Daisho — Japanese OCR capture for Windows
+# Japanese OCR capture for Windows
 
 Capture any region of your screen, read the Japanese in it, and send the text
 straight to a reader that explains the grammar — without leaving the page you
